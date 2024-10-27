@@ -1,0 +1,46 @@
+#apiVersion: v1
+#kind: Namespace
+#metadata:
+#  name: hacker-company
+#
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginxdeploy
+  namespace: hacker-company
+  labels:
+    stable: frontend
+    role: frontend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      role: frontend
+  template:
+    metadata:
+      labels:
+        role: frontend
+    spec:
+      containers:
+        - name: c001
+          image: nginx
+          ports:
+            - containerPort: 80
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: clusterfrontend
+  namespace: hacker-company
+spec:
+  selector:
+    role: frontend
+  type: ClusterIP
+  ports:
+    - protocol: TCP
+      port: 8001
+      targetPort: 80
